@@ -1,4 +1,13 @@
-.env
+backend/node_modules/
+backend/node_modules/.cache/
+frontend/node_modules/
+frontend/node_modules/.cache/
+backend/.env
+frontend/.env
+node_modules/
+API_DOCUMENTATION.yml
+BLUEPRINT.md
+CLERK_AUTH.md
 # Logs
 logs
 *.log
@@ -23,3 +32,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+node_modules/
+node_modules/
+node_modules/
+.cache/
