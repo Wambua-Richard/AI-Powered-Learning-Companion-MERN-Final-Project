@@ -37,3 +37,7 @@ node_modules/
 node_modules/
 .cache/
 .env
+.env
+API_DOCUMENTATION.yml
+BLUEPRINT.md
+CLERK_AUTH.md
