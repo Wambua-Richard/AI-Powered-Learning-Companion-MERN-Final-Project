@@ -1,23 +1,48 @@
-// Main entry point for the AI-Powered Learning Companion backend
+// ============================================================
+//  AI-Powered Learning Companion - Main Server Entry Point
+// ============================================================
 
+// Load env FIRST
+import dotenv from "dotenv";
+dotenv.config();
+
+console.log("ENV KEY IN SERVER:", process.env.OPENAI_API_KEY);
+
+// ------------------------------
+// IMPORTS
+// ------------------------------
 import http from "http";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import { Server } from "socket.io";
-import app from "./app.js";   // <-- Uses your updated app.js
-import * as Sentry from '@sentry/node';
+import * as Sentry from "@sentry/node";
+import app from "./app.js";
 import aiRoutes from "./routes/ai.routes.js";
+
+
+// ------------------------------
+// SENTRY INITIALIZATION (if configured)
+// ------------------------------
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || "development",
+  });
+
+  // Sentry request tracking middleware
+  app.use(Sentry.Handlers.requestHandler());
+}
+
+// ------------------------------
+// REGISTER ROUTES
 // ------------------------------
 app.use("/api/v1/ai", aiRoutes);
 
 // ------------------------------
-
-Sentry.init({ dsn: process.env.SENTRY_DSN, environment: process.env.NODE_ENV });
-app.use(Sentry.Handlers.requestHandler());
-// define routes...
-app.use(Sentry.Handlers.errorHandler());
-
-dotenv.config();
+// SENTRY ERROR HANDLER (must come after routes)
+// ------------------------------
+if (process.env.SENTRY_DSN) {
+  app.use(Sentry.Handlers.errorHandler());
+}
 
 // ------------------------------
 // MONGO CONNECTION
@@ -26,7 +51,9 @@ const MONGO_URI =
   process.env.MONGO_URI || "mongodb://localhost:27017/ai_learning_companion";
 
 mongoose
-  .connect(MONGO_URI)
+  .connect(MONGO_URI, {
+    autoIndex: true,
+  })
   .then(() => console.log("✅ MongoDB connected"))
   .catch((err) => {
     console.error("❌ MongoDB connection failed:", err.message);
@@ -34,7 +61,7 @@ mongoose
   });
 
 // ------------------------------
-// CREATE HTTP SERVER
+// HTTP SERVER INITIALIZATION
 // ------------------------------
 const server = http.createServer(app);
 
@@ -43,34 +70,38 @@ const server = http.createServer(app);
 // ------------------------------
 const io = new Server(server, {
   cors: {
-    origin: "*",
+    origin: process.env.CLIENT_URL || "*",
     methods: ["GET", "POST"],
   },
 });
 
-// Real-time events
+// Socket event handlers
 io.on("connection", (socket) => {
-  console.log("🟢 Socket connected:", socket.id);
+  console.log(`🟢 Socket connected: ${socket.id}`);
 
-  // Join user-specific room
+  // User joins their private room
   socket.on("join_room", ({ userId }) => {
     if (userId) {
-      socket.join(`user_${userId}`);
-      console.log(`User ${userId} joined room user_${userId}`);
+      const room = `user_${userId}`;
+      socket.join(room);
+      console.log(`🔵 User ${userId} joined room ${room}`);
     }
   });
 
-  // For AI responses streaming or notifications later
-  socket.on("ai_message", (data) => {
-    io.to(`user_${data.userId}`).emit("ai_response", data.message);
+  // AI messages broadcast to user room
+  socket.on("ai_message", ({ userId, message }) => {
+    if (userId) {
+      const room = `user_${userId}`;
+      io.to(room).emit("ai_response", message);
+    }
   });
 
   socket.on("disconnect", () => {
-    console.log("🔴 Socket disconnected:", socket.id);
+    console.log(`🔴 Socket disconnected: ${socket.id}`);
   });
 });
 
-// Make Socket.IO available across controllers (optional)
+// Make Socket.IO accessible app-wide
 app.set("io", io);
 
 // ------------------------------
@@ -87,9 +118,15 @@ server.listen(PORT, () =>
 process.on("SIGINT", async () => {
   console.log("🛑 Gracefully shutting down...");
 
-  await mongoose.connection.close();
+  try {
+    await mongoose.connection.close();
+    console.log("🟡 MongoDB connection closed.");
+  } catch (err) {
+    console.error("❌ Error closing MongoDB:", err.message);
+  }
+
   server.close(() => {
-    console.log("🟡 Server closed.");
+    console.log("🟡 HTTP server closed.");
     process.exit(0);
   });
 });

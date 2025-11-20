@@ -291,8 +291,8 @@ Supported deployment targets:
 
 The project is live on:
 
-Backend: https://mern-final-project-backend-6jkv.onrender.com
-Frontend:
+Backend: https://mern-final-project-backend-ws4x.onrender.com
+Frontend: https://mern-final-project-frontend-phi.vercel.app/
 
 ### **CI/CD Pipeline (GitHub Actions)**
 
