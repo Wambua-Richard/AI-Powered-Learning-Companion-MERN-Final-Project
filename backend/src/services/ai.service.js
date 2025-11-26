@@ -1,4 +1,3 @@
-
 import OpenAI from "openai";
 // Ensure API key exists
 if (!process.env.OPENAI_API_KEY) {

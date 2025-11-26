@@ -2,14 +2,20 @@
 //  AI-Powered Learning Companion - Main Server Entry Point
 // ============================================================
 
-// Load env FIRST
 import dotenv from "dotenv";
-dotenv.config();
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Force dotenv to load ONLY backend/.env
+dotenv.config({
+  path: path.join(__dirname, "../.env"),
+});
 
 console.log("ENV KEY IN SERVER:", process.env.OPENAI_API_KEY);
 
-// ------------------------------
-// IMPORTS
 // ------------------------------
 import http from "http";
 import mongoose from "mongoose";
