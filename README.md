@@ -41,21 +41,21 @@ The project includes a fully documented architecture, API specification, testing
 
 # 📂 Table of Contents
 
-* [✨ Features](#-features)
-* [🧠 System Components](#-system-components)
-* [📦 Tech Stack](#-tech-stack)
-* [📁 Project Structure](#-project-structure)
-* [⚙️ Installation & Setup](#️-installation--setup)
+* ✨ Features
+* 🧠 System Components
+* 📦 Tech Stack
+* 📁 Project Structure
+* ⚙️ Installation & Setup
 
-  * [Backend Setup](#backend-setup)
-  * [Frontend Setup](#frontend-setup)
-* [🔐 Environment Variables](#-environment-variables)
-* [🧪 Testing (Unit, Integration, E2E)](#-testing-unit-integration-e2e)
-* [🚀 Deployment Guide](#-deployment-guide)
-* [🧭 API Documentation](#-api-documentation)
-* [📚 Additional Docs](#-additional-docs)
-* [🧑‍💻 Developer Notes](#-developer-notes)
-* [📜 License](#-license)
+  * Backend Setup
+  * Frontend Setup
+* 🔐 Environment Variables
+* 🧪 Testing (Unit, Integration, E2E)
+* 🚀 Deployment Guide
+* 🧭 API Documentation
+* 📚 Additional Docs
+* 🧑‍💻 Developer Notes
+* 📜 License
 
 ---
 
